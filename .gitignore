@@ -1,0 +1,10 @@
+/config/imint.yml
+/setup/imint.prop
+/config/MANIFEST.MF
+*.jar
+*.war
+/env.sh
+/extract
+/attic
+/tmp
+/vendor
