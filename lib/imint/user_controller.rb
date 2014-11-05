@@ -56,6 +56,23 @@ module Imint
       end
     end
 
+    def get_user_entitlements(id)
+      begin
+        @svc.getEntitlementsForUser(id)
+      rescue Exception => ex
+        ex
+      end
+    end
+
+    def revoke_user_entitlement(id, ent_id)
+      begin
+        @svc.(id)
+      rescue Exception => ex
+        ex
+      end
+    end
+
+
     protected
     def search(crit)
       @svc.search(crit, @atts, nil).map do |e|

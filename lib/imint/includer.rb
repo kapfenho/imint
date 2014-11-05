@@ -11,6 +11,9 @@ module Imint
     include_package "oracle.iam.identity.exception"
     include_package "oracle.iam.platform.authz.exception"
     include_package "oracle.iam.reconciliation.vo"
+    include_package "oracle.iam.provisioning.api"
+    include_package "oracle.iam.provisioning.vo"
+    include_package "oracle.iam.provisioning.exception"
   end
   module JOrg
     include_package "oracle.iam.identity.orgmgmt.api"

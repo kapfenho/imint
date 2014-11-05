@@ -27,7 +27,33 @@ module Imint
       set :json_encoder, :to_json
       OIM::connect()
     end
-  
+ 
+    # provisioning
+    #
+    # -> get all user entitilements of user
+    get '/user/:id/entitlement' do
+      ent = OIM::do.user.get_user_entitlements(params[:id])
+      halt 404 if == Java::OracleIamProvisioningException::UserNotFoundException
+    end
+    
+    # -> create user entitilement
+    post '/user/:id/entitlement' do
+      puts "test"
+    end
+
+    # -> change user entitilements
+    put '/user/:id/entitlement/:eid' do
+      puts "test"
+    end
+
+    # -> end-date user ent.?
+    # -> revoke user entitlement
+    put '/user/:id/entitlement/:eid' do
+      ent = OIM::do.user.revoke_user_entitlement(params)
+      puts "resp: #{ent}"
+    end
+
+ 
     # user      ----------------------------------------
     #
     get '/user/attributes' do
