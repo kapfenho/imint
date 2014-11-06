@@ -9,6 +9,8 @@ module Imint
     def initialize(client = nil)
       @client = client
       @svc    = client.getService(JUser::UserManager.java_class)
+      @svcp   = client.getService(JUser::ProvisioningService.java_class)
+      @svce   = client.getService(JUser::EntitlementService.java_class)
       @atts   = JHashSet.new()
       JUser::UserManagerConstants::AttributeName.values.each { |a| @atts.add a.getId }
     end
@@ -56,22 +58,39 @@ module Imint
       end
     end
 
-    def get_user_entitlements(id)
+    def get_user_entitlements(params)
       begin
-        @svc.getEntitlementsForUser(id)
+        scrit = JClient::SearchCriteria.new(
+          JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
+          get_entitlement(params[:eid]).getDisplayName, 
+          JClient::SearchCriteria::Operator::EQUAL)
+        @svcp.getEntitlementsForUser(params['id'], scrit, JHashMap.new())
       rescue Exception => ex
         ex
       end
+    end
+
+    def get_account(id)
+      @svcp.getAccountDetails(id)
+    end
+
+    def get_ent(id)
+      @svcp.getEntitlementsForUser(id)
     end
 
     def revoke_user_entitlement(id, ent_id)
       begin
-        @svc.(id)
+        ent = get_user_entitlements( { 'id' => id, 'eid' => ent_id } ).get(0)
+        @svcp.revokeEntitlement(ent)
       rescue Exception => ex
         ex
       end
     end
 
+    protected 
+    def get_entitlement(id)
+      @svce.findEntitlement(id)
+    end
 
     protected
     def search(crit)

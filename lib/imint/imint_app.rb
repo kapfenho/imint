@@ -31,9 +31,11 @@ module Imint
     # provisioning
     #
     # -> get all user entitilements of user
-    get '/user/:id/entitlement' do
-      ent = OIM::do.user.get_user_entitlements(params[:id])
-      halt 404 if == Java::OracleIamProvisioningException::UserNotFoundException
+    get '/user/:id/entitlement/:eid' do
+      ent = OIM::do.user.get_user_entitlements(params)
+      puts ent
+      halt 404 if ent == Java::OracleIamProvisioningException::UserNotFoundException
+      #halt 404 if ent.nil? or ent.empty? 
     end
     
     # -> create user entitilement
@@ -51,6 +53,9 @@ module Imint
     put '/user/:id/entitlement/:eid' do
       ent = OIM::do.user.revoke_user_entitlement(params)
       puts "resp: #{ent}"
+      halt 404 if ent == Java::OracleIamProvisioningException::AccountNotFoundException
+      halt 404 if ent == Java::OracleIamProvisioningException::EntitlementNotProvisionedException
+      #halt 403 if ent == oracle.iam.platform.authopss.exception.AccessDeniedException
     end
 
  

@@ -30,6 +30,12 @@ class MyAppTest < MiniTest::Unit::TestCase
   
   ## user object tests -----------------------------------------------------
   ##
+  # get entitlements
+  #
+  def test_user_get_entitlements do
+    get '/user/21/entitlements'
+    assert (last_response.status == 200), "Get user entitlements: response is not 200"
+  end
   # add user
   #
   def test_user_features
