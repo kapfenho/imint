@@ -60,27 +60,20 @@ module Imint
 
     def get_user_entitlements(params)
       begin
+        ent_name = params.key?(:ent_name) ? params[:ent_name] : get_entitlement(params[:eid]).getDisplayName
         scrit = JClient::SearchCriteria.new(
           JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
-          get_entitlement(params[:eid]).getDisplayName, 
+          ent_name,
           JClient::SearchCriteria::Operator::EQUAL)
-        @svcp.getEntitlementsForUser(params['id'], scrit, JHashMap.new())
+        @svcp.getEntitlementsForUser(params[:id], scrit, JHashMap.new())
       rescue Exception => ex
         ex
       end
     end
 
-    def get_account(id)
-      @svcp.getAccountDetails(id)
-    end
-
-    def get_ent(id)
-      @svcp.getEntitlementsForUser(id)
-    end
-
-    def revoke_user_entitlement(id, ent_id)
+    def revoke_user_entitlement(params)
       begin
-        ent = get_user_entitlements( { 'id' => id, 'eid' => ent_id } ).get(0)
+        ent = get_user_entitlements(params).get(0)
         @svcp.revokeEntitlement(ent)
       rescue Exception => ex
         ex
@@ -89,7 +82,11 @@ module Imint
 
     protected 
     def get_entitlement(id)
-      @svce.findEntitlement(id)
+      begin
+        @svce.findEntitlement(id)
+      rescue Exception => ex
+        ex
+      end
     end
 
     protected

@@ -32,33 +32,37 @@ module Imint
     #
     # -> get all user entitilements of user
     get '/user/:id/entitlement/:eid' do
-      ent = OIM::do.user.get_user_entitlements(params)
-      puts ent
+      ent = OIM::do.user.get_user_entitlements( { :id => params[:id], :eid => params[:eid].to_i } )
       halt 404 if ent == Java::OracleIamProvisioningException::UserNotFoundException
+      "entitlement: #{ent.get(0).getEntitlement.getDisplayName}"
+      #content_type :js
+      #JSON::pretty_generate e
       #halt 404 if ent.nil? or ent.empty? 
     end
     
-    # -> create user entitilement
-    post '/user/:id/entitlement' do
-      puts "test"
-    end
-
-    # -> change user entitilements
-    put '/user/:id/entitlement/:eid' do
-      puts "test"
-    end
-
     # -> end-date user ent.?
     # -> revoke user entitlement
-    put '/user/:id/entitlement/:eid' do
-      ent = OIM::do.user.revoke_user_entitlement(params)
-      puts "resp: #{ent}"
+    #put '/user/:id/entitlement/:eid' do
+    put '/user/:id/entitlement' do
+      data = JSON.parse(request.body.read)
+      puts "data: #{data}"
+      puts "params: #{params}"
+      ent = OIM::do.user.revoke_user_entitlement( { :ent_name => data['ent_name'], :id => params[:id] } )
       halt 404 if ent == Java::OracleIamProvisioningException::AccountNotFoundException
       halt 404 if ent == Java::OracleIamProvisioningException::EntitlementNotProvisionedException
-      #halt 403 if ent == oracle.iam.platform.authopss.exception.AccessDeniedException
     end
 
- 
+    ## -> create user entitilement
+    #post '/user/:id/entitlement' do
+    #  puts "test"
+    #end
+
+    ## -> change user entitilements
+    #put '/user/:id/entitlement/:eid' do
+    #  puts "test"
+    #end
+
+     
     # user      ----------------------------------------
     #
     get '/user/attributes' do
