@@ -59,8 +59,9 @@ module Imint
     end
 
     def get_user_entitlements(params)
+      puts "params: #{params}"
       begin
-        ent_name = params.key?(:ent_name) ? params[:ent_name] : get_entitlement(params[:eid]).getDisplayName
+        ent_name = params.key?(:ent_name) ? params[:ent_name] : get_entitlement(params[:eid].to_i).getDisplayName
         scrit = JClient::SearchCriteria.new(
           JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
           ent_name,

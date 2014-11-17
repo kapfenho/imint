@@ -32,9 +32,10 @@ module Imint
     #
     # -> get all user entitilements of user
     get '/user/:id/entitlement/:eid' do
-      ent = OIM::do.user.get_user_entitlements( { :id => params[:id], :eid => params[:eid].to_i } )
+      #ent = OIM::do.user.get_user_entitlements( { :id => params[:id], :eid => params[:eid].to_i } )
+      ent = OIM::do.user.get_user_entitlements(params)
       halt 404 if ent == Java::OracleIamProvisioningException::UserNotFoundException
-      "entitlement: #{ent.get(0).getEntitlement.getDisplayName}"
+      puts "entitlement: #{ent.get(0).getEntitlement.getDisplayName}"
       #content_type :js
       #JSON::pretty_generate e
       #halt 404 if ent.nil? or ent.empty? 
@@ -44,6 +45,7 @@ module Imint
     # -> revoke user entitlement
     #put '/user/:id/entitlement/:eid' do
     put '/user/:id/entitlement' do
+      puts "body: #{request.body.inspect}"
       data = JSON.parse(request.body.read)
       puts "data: #{data}"
       puts "params: #{params}"
