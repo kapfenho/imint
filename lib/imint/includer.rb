@@ -1,14 +1,6 @@
 require 'java'
 require 'securerandom'
 
-pfix = "../"
-require_relative "#{pfix}/commons-logging.jar"
-require_relative "#{pfix}/eclipselink.jar"
-require_relative "#{pfix}/spring.jar"
-require_relative "#{pfix}/wlfullclient.jar"                                                                                                                  
-require_relative "#{pfix}/jrf-api.jar"
-require_relative "#{pfix}/oimclient.jar"
-
 module Imint
 
   module JUser
