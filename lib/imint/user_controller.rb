@@ -9,6 +9,8 @@ module Imint
     def initialize(client = nil)
       @client = client
       @svc    = client.getService(JUser::UserManager.java_class)
+      @svcp   = client.getService(JUser::ProvisioningService.java_class)
+      @svce   = client.getService(JUser::EntitlementService.java_class)
       @atts   = JHashSet.new()
       JUser::UserManagerConstants::AttributeName.values.each { |a| @atts.add a.getId }
     end
@@ -51,6 +53,41 @@ module Imint
     def change_password(id, data)
       begin
         @svc.changePassword(id, data['password'].to_java.toCharArray, false, false)
+      rescue Exception => ex
+        ex
+      end
+    end
+
+    def get_user_entitlements(params)
+      begin
+        puts "params: #{params}"
+        ent_name = params.key?(:ent_name) ? 
+          params[:ent_name] : get_entitlement(params[:eid].to_i).getDisplayName
+        scrit = JClient::SearchCriteria.new(
+          JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
+          ent_name,
+          JClient::SearchCriteria::Operator::EQUAL)
+        @svcp.getEntitlementsForUser(params[:id], scrit, JHashMap.new())
+      rescue Exception => ex
+        puts "get ex: #{ex}"
+        ex
+      end
+    end
+
+    def revoke_user_entitlement(params)
+      begin
+        ent = get_user_entitlements(params).get(0)
+        @svcp.revokeEntitlement(ent)
+      rescue Exception => ex
+        puts "revoke ex: #{ex}"
+        ex
+      end
+    end
+
+    protected 
+    def get_entitlement(id)
+      begin
+        @svce.findEntitlement(id)
       rescue Exception => ex
         ex
       end
