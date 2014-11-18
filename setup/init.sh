@@ -26,6 +26,7 @@ ssh ${user}@${server} "mkdir -p \${HOME}/lib"
 # copy necessary files
 scp ${PWD}/setup/Plan.xml ${user}@${server}:${apphome}/current/plan
 scp ${PWD}/setup/deploy.py ${user}@${server}:\${HOME}/lib
+scp ${PWD}/setup/idm-deplenv.sh ${user}@${server}:\${HOME}/.env
 scp ${PWD}/setup/imint.prop ${user}@${server}:\${HOME}/.wlst
 
 exit 0
