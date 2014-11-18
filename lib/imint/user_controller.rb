@@ -59,15 +59,17 @@ module Imint
     end
 
     def get_user_entitlements(params)
-      puts "params: #{params}"
       begin
-        ent_name = params.key?(:ent_name) ? params[:ent_name] : get_entitlement(params[:eid].to_i).getDisplayName
+        puts "params: #{params}"
+        ent_name = params.key?(:ent_name) ? 
+          params[:ent_name] : get_entitlement(params[:eid].to_i).getDisplayName
         scrit = JClient::SearchCriteria.new(
           JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
           ent_name,
           JClient::SearchCriteria::Operator::EQUAL)
         @svcp.getEntitlementsForUser(params[:id], scrit, JHashMap.new())
       rescue Exception => ex
+        puts "get ex: #{ex}"
         ex
       end
     end
@@ -77,6 +79,7 @@ module Imint
         ent = get_user_entitlements(params).get(0)
         @svcp.revokeEntitlement(ent)
       rescue Exception => ex
+        puts "revoke ex: #{ex}"
         ex
       end
     end
