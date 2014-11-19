@@ -33,12 +33,10 @@ module Imint
         JClient::SearchCriteria.new(m, o, JClient::SearchCriteria::Operator::AND) })
     end
 
+    #@svc.resetPassword(u.getLogin, true, false)
     def create(para)
-      h = java.util.HashMap.new(para)
-      u = JUser::User.new(java.lang.String.new(SecureRandom.uuid), h)
-      usr = @svc.create(u)
-      @svc.resetPassword(u.getLogin, true, false)
-      usr
+      u = JUser::User.new(java.lang.String.new(SecureRandom.uuid), java.util.HashMap.new(para))
+      @svc.create(u)
     end
 
     def delete(uid)
@@ -46,8 +44,7 @@ module Imint
     end
 
     def update(uid, para)
-      u = JUser::User.new(java.lang.String.new(uid), java.util.HashMap.new(para))
-      @svc.modify(u)
+      @svc.modify(JUser::User.new(java.lang.String.new(uid), java.util.HashMap.new(para)))
     end
      
     def change_password(id, data)
@@ -60,7 +57,7 @@ module Imint
 
     def get_user_entitlements(params)
       begin
-        ent_name = params.key?(:ent_name) ? params[:ent_name] : get_entitlement(params[:eid].to_i).getDisplayName
+        ent_name = get_entitlement(params[:eid].to_i).getDisplayName
         scrit = JClient::SearchCriteria.new(
           JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
           ent_name,
@@ -74,14 +71,8 @@ module Imint
     def revoke_user_entitlement(params)
       begin
         entitlements = get_user_entitlements(params)
-
-        if !entitlements.empty?
-          ent = entitlements.get(0) 
-        else
-          raise IOError, "Search did not return any results"
-        end
-
-        @svcp.revokeEntitlement(ent)
+        raise IOError if entitlements.empty?
+        @svcp.revokeEntitlement(entitlements.get(0))
       rescue Exception => ex
         ex
       end

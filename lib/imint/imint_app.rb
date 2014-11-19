@@ -49,22 +49,14 @@ module Imint
     end
     
     # -> revoke user entitlement
-    put '/user/:id/entitlement' do
-      data = JSON.parse(request.body.read)
-      ent = OIM::do.user.revoke_user_entitlement( { :eid => data['eid'], 
+    put '/user/:id/entitlement/:eid' do
+      ent = OIM::do.user.revoke_user_entitlement( { :eid => params[:eid], 
                                                     :id => params[:id] } )
-      puts "ent.inspect #{ent.inspect}"
-      puts "ent.class #{ent.class}"
       halt 404 if ent.class == IOError
       halt 404 if ent == Java::OracleIamProvisioningException::AccountNotFoundException
       halt 404 if ent == Java::OracleIamProvisioningException::EntitlementNotProvisionedException
     end
 
-    ## -> create user entitilement
-    #post '/user/:id/entitlement' do
-    #  puts "test"
-    #end
-     
     # user      ----------------------------------------
     #
     get '/user/attributes' do
