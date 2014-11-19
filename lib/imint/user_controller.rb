@@ -50,12 +50,6 @@ module Imint
       @svc.modify(u)
     end
      
-    # NoSuchUserException: If user with given userID does not exist
-    # AccessDeniedException: 
-    #   If logged-in user does not have permission to change the password of this user
-    # UserManagerException: 
-    #   If there is an error while changing the user's password.
-    #   Usually this means that the password policy violation was triggered 
     def change_password(id, data)
       begin
         @svc.changePassword(id, data['password'].to_java.toCharArray, false, false)
