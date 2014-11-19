@@ -20,13 +20,17 @@ module Imint
     end
 
     def index
-      search JClient::SearchCriteria.new('First Name', 'ZZZ', JClient::SearchCriteria::Operator::NOT_EQUAL)
+      search JClient::SearchCriteria.new('First Name', 
+                                         'ZZZ', 
+                                         JClient::SearchCriteria::Operator::NOT_EQUAL)
     end
 
     def search_for(para)
       clist = []
-      para.map   { |k,v| clist << JClient::SearchCriteria.new(k, v, JClient::SearchCriteria::Operator::EQUAL) }
-      search(clist.reduce { |m,o| JClient::SearchCriteria.new(m, o, JClient::SearchCriteria::Operator::AND) })
+      para.map   { |k,v| clist << 
+                   JClient::SearchCriteria.new(k, v, JClient::SearchCriteria::Operator::EQUAL) }
+      search(clist.reduce { |m,o| 
+        JClient::SearchCriteria.new(m, o, JClient::SearchCriteria::Operator::AND) })
     end
 
     def create(para)
@@ -47,9 +51,11 @@ module Imint
     end
      
     # NoSuchUserException: If user with given userID does not exist
-    # AccessDeniedException: If logged-in user does not have permission to change the password of this user
-    # UserManagerException: If there is an error while changing the user's password.
-    #                       Usually this means that the password policy violation was triggered 
+    # AccessDeniedException: 
+    #   If logged-in user does not have permission to change the password of this user
+    # UserManagerException: 
+    #   If there is an error while changing the user's password.
+    #   Usually this means that the password policy violation was triggered 
     def change_password(id, data)
       begin
         @svc.changePassword(id, data['password'].to_java.toCharArray, false, false)
@@ -60,26 +66,29 @@ module Imint
 
     def get_user_entitlements(params)
       begin
-        puts "params: #{params}"
-        ent_name = params.key?(:ent_name) ? 
-          params[:ent_name] : get_entitlement(params[:eid].to_i).getDisplayName
+        ent_name = params.key?(:ent_name) ? params[:ent_name] : get_entitlement(params[:eid].to_i).getDisplayName
         scrit = JClient::SearchCriteria.new(
           JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
           ent_name,
           JClient::SearchCriteria::Operator::EQUAL)
         @svcp.getEntitlementsForUser(params[:id], scrit, JHashMap.new())
       rescue Exception => ex
-        puts "get ex: #{ex}"
         ex
       end
     end
 
     def revoke_user_entitlement(params)
       begin
-        ent = get_user_entitlements(params).get(0)
+        entitlements = get_user_entitlements(params)
+
+        if !entitlements.empty?
+          ent = entitlements.get(0) 
+        else
+          raise IOError, "Search did not return any results"
+        end
+
         @svcp.revokeEntitlement(ent)
       rescue Exception => ex
-        puts "revoke ex: #{ex}"
         ex
       end
     end
