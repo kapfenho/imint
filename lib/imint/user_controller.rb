@@ -55,6 +55,26 @@ module Imint
       end
     end
 
+    def get_all_user_entitlements(id)
+      begin
+        ents = @svcp.getEntitlementsForUser(id)
+        entitlements = Array.new
+        ents.each do |en|
+          e = 
+            {:ent_list_key =>     en.getEntitlement.getEntitlementKey, 
+             :ent_display_name => en.getEntitlement.getDisplayName,
+             :ent_description =>  en.getEntitlement.getDisplayName,
+             :ent_value =>        en.getEntitlement.getEntitlementValue,
+             :svr_key =>          en.getEntitlement.getItResourceKey
+            }
+          entitlements.push(e)
+        end
+        entitlements
+      rescue Exception => ex
+        ex
+      end
+    end
+
     def get_user_entitlements(params)
       begin
         ent_name = get_entitlement(params[:eid].to_i).getDisplayName
