@@ -32,8 +32,8 @@ module Imint
     #
     # get all user entitlements
     get '/user/:id/entitlements' do
-      puts "params: #{params}"
       ent = OIM::do.user.get_all_user_entitlements(params['id'].to_s)
+      halt 404 if ent.empty? or ent.nil?
       content_type :js
       JSON::pretty_generate ent
     end
