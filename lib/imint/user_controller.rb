@@ -9,8 +9,6 @@ module Imint
     def initialize(client = nil)
       @client = client
       @svc    = client.getService(JUser::UserManager.java_class)
-      @svcp   = client.getService(JUser::ProvisioningService.java_class)
-      @svce   = client.getService(JUser::EntitlementService.java_class)
       @atts   = JHashSet.new()
       JUser::UserManagerConstants::AttributeName.values.each { |a| @atts.add a.getId }
     end
@@ -33,10 +31,10 @@ module Imint
         JClient::SearchCriteria.new(m, o, JClient::SearchCriteria::Operator::AND) })
     end
 
-    #@svc.resetPassword(u.getLogin, true, false)
     def create(para)
       u = JUser::User.new(java.lang.String.new(SecureRandom.uuid), java.util.HashMap.new(para))
       @svc.create(u)
+    # @svc.resetPassword(u.getLogin, true, false)
     end
 
     def delete(uid)
@@ -50,58 +48,6 @@ module Imint
     def change_password(id, data)
       begin
         @svc.changePassword(id, data['password'].to_java.toCharArray, false, false)
-      rescue Exception => ex
-        ex
-      end
-    end
-
-    def get_all_user_entitlements(id)
-      begin
-        ents = @svcp.getEntitlementsForUser(id)
-        entitlements = Array.new
-        ents.each do |en|
-          e = 
-            {:ent_list_key =>     en.getEntitlement.getEntitlementKey, 
-             :ent_display_name => en.getEntitlement.getDisplayName,
-             :ent_description =>  en.getEntitlement.getDisplayName,
-             :ent_value =>        en.getEntitlement.getEntitlementValue,
-             :svr_key =>          en.getEntitlement.getItResourceKey
-            }
-          entitlements.push(e)
-        end
-        entitlements
-      rescue Exception => ex
-        ex
-      end
-    end
-
-    def get_user_entitlements(params)
-      begin
-        ent_name = get_entitlement(params[:eid].to_i).getDisplayName
-        scrit = JClient::SearchCriteria.new(
-          JUser::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
-          ent_name,
-          JClient::SearchCriteria::Operator::EQUAL)
-        @svcp.getEntitlementsForUser(params[:id], scrit, JHashMap.new())
-      rescue Exception => ex
-        ex
-      end
-    end
-
-    def revoke_user_entitlement(params)
-      begin
-        entitlements = get_user_entitlements(params)
-        raise IOError if entitlements.empty?
-        @svcp.revokeEntitlement(entitlements.get(0))
-      rescue Exception => ex
-        ex
-      end
-    end
-
-    protected 
-    def get_entitlement(id)
-      begin
-        @svce.findEntitlement(id)
       rescue Exception => ex
         ex
       end

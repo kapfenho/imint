@@ -2,12 +2,13 @@ require_relative 'includer'
 require_relative 'user_controller'
 require_relative 'organization_controller'
 require_relative 'role_controller'
+require_relative 'provisioning_controller'
 
 module Imint
 
   class OIMController
   
-    attr_accessor :client, :user, :org, :role
+    attr_accessor :client, :user, :org, :role, :prov
   
     def initialize
       @svc, @atts = nil, nil
@@ -25,6 +26,7 @@ module Imint
       @user = UserController.new(client)
       @org  = OrganizationController.new(client)
       @role = RoleController.new(client)
+      @prov  = ProvisioningController.new(client)
     end
   
     def close
