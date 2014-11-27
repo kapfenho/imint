@@ -3,18 +3,18 @@ development:
   user: iam
   deploy_dir: /appl/iam/fmw/config/deploy/imint/new
   shellenv: . ~/.env/idm-deplenv.sh
-  properties: .wlst/imint.prop
+  properties: .env/identity-imint.prop
 
 test:
   server: dwptoim1
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
   shellenv: . ~/.env/idm-deplenv.sh
-  properties: .wlst/imint.prop
+  properties: .env/identity-imint.prop
 
 production:
   server: dwppoim1
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
   shellenv: . ~/.env/idm-deplenv.sh
-  properties: .wlst/imint.prop
+  properties: .env/identity-imint.prop
