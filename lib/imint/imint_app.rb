@@ -51,6 +51,7 @@ module Imint
     put '/user/:id/entitlement/:eid' do
       ent = OIM::do.prov.revoke_user_entitlement( { :eid => params[:eid], 
                                                     :id => params[:id] } )
+      puts ent.inspect
       halt 404 if ent.class == IOError
       halt 404 if ent == Java::OracleIamProvisioningException::AccountNotFoundException
       halt 404 if ent == Java::OracleIamProvisioningException::EntitlementNotProvisionedException

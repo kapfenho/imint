@@ -31,14 +31,20 @@ module Imint
     # the only way we can filter the entitlement search is via ENTITLEMENT_DISPLAYNAME.getId
     # that is why we have to fetch the entitlement name
     def get_user_entitlements(params)
+      puts "params: #{params.inspect}"
       begin
-        if params.key?('eid')
-          ent_name = get_entitlement(params['eid'].to_i).getDisplayName
+        if params.key?(:eid)
+          puts "eid present"
+          e = get_entitlement(params['eid'].to_i)
+          raise IOError if e.class == Java::OracleIamProvisioningException::EntitlementNotFoundException
+          ent_name = e.getDisplayName
           scrit = JClient::SearchCriteria.new(
             JProv::ProvisioningConstants::EntitlementSearchAttribute::ENTITLEMENT_DISPLAYNAME.getId,
             ent_name, JClient::SearchCriteria::Operator::EQUAL)
-          @svcp.getEntitlementsForUser(params['id'], scrit, JHashMap.new())
+          t = @svcp.getEntitlementsForUser(params['id'], scrit, JHashMap.new())
+          puts t.inspect
         else
+          puts "eid not present"
           entitlements = @svcp.getEntitlementsForUser(params[:id])
           parse_entitlements(entitlements)
         end
@@ -50,7 +56,9 @@ module Imint
     def revoke_user_entitlement(params)
       begin
         entitlements = get_user_entitlements(params)
-        raise IOError if entitlements.empty?
+        puts "revoke ent"
+        puts "revoke ent: #{entitlements.inspect}"
+        raise IOError if entitlements.nil? or entitlements.class == IOError
         @svcp.revokeEntitlement(entitlements.get(0))
       rescue Exception => ex
         ex
@@ -62,6 +70,7 @@ module Imint
       begin
         @svce.findEntitlement(id)
       rescue Exception => ex
+        puts ex
         ex
       end
     end
