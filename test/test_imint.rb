@@ -32,30 +32,30 @@ class MyAppTest < MiniTest::Unit::TestCase
   ##
   # get entitlements
   #
-  def test_user_get_entitlements
-    
-    # get all user entitlements
-    # NOTE: in order for this one to work, you have to have entitlements assigned for this user
-    get '/user/21/entitlement/2'
-    assert (last_response.status == 200), "Get user entitlement: response is not 200"
- 
-    # get specific user entitlement
-    # NOTE: in order for this one to work, you have to have entitlements assigned for this user
-    get '/user/21/entitlements'
-    assert (last_response.status == 200), "Get specific user entitlement: response is not 200"
+#  def test_user_get_entitlements
+#   
+#    # NOTE: in order for this one to work, you have to have entitlements assigned for this user
+#    # get all user entitlements
+#    get '/user/21/entitlements'
+#    assert (last_response.status == 200), "Get specific user entitlement: response is not 200"
+# 
+#    # get specific user entitlement
+#    # NOTE: in order for this one to work, you have to have entitlements assigned for this user
+#    get '/user/21/entitlement/2'
+#    assert (last_response.status == 200), "Get user entitlement: response is not 200"
+#
+#    # revoke user entitlement
+#    # NOTE: in order for this one to work, you have to have entitlements assigned for this user
+#    put '/user/41/entitlement/2'
+#    assert (last_response.status == 200), "Revoke user entitlement: response is not 200"
+#  end
 
-    # revoke user entitlement
-    # NOTE: in order for this one to work, you have to have entitlements assigned for this user
-    put '/user/21/entitlement/2'
-    assert (last_response.status == 200), "Revoke user entitlement: response is not 200"
-  end
 
 
-
-  ## user object tests -----------------------------------------------------
-  ##
-  # add user
-  #
+#  ## user object tests -----------------------------------------------------
+#  ##
+#  # add user
+#  #
   def test_user_features
     
     # create new user
@@ -75,11 +75,18 @@ class MyAppTest < MiniTest::Unit::TestCase
     get "/user/#{$user_guid}"
     assert (last_response.body.size > 50), "Get user by id: response too small for valid data"
 
-    # change password for user with guid defined in @guid variable
-    # NOTE: for now we use a fix usr_key to change password, since the above test does not generate password for the temporary user 
-    #put "/user/#{$user_guid}/password", params = '{"password": "Montag12", "notify_racf": "false"}'
-    #assert (last_response.status == 200), "Response is not 200"
+    # change password for user with guid defined in $user_guid variable
+    put "/user/#{$user_guid}/password", '{"password": "Montag14", "notify_racf": "false"}'
+    assert (last_response.status == 200), "Response is not 200"
+ 
+    # get user with uid defined in $user_name variable
+    get "/#{$user_name}"
+    assert (last_response.body.size > 50), "Get user by username: response too small for valid data"
 
+    ## change password for user with user login defined in $user_name variable
+    put "/#{$user_name}/password", '{"password": "Montag15", "notify_racf": false}'
+    assert (last_response.status == 200), "Response is not 200"
+ 
     # get all users
     get '/user'
     assert (last_response.body.size > 50), "Get all users: Response too small for valid data"
@@ -87,14 +94,12 @@ class MyAppTest < MiniTest::Unit::TestCase
     # get available user attributes
     get '/user/attributes'
     assert (last_response.body.size > 50), "Get user attributes: Response too small for valid data"
+  
+    # delete user with uid defined in @guid variable
+    delete "/user/#{$user_guid}"
+    assert (last_response.status == 204), "Response is not 204"
   end
 
-  ### delete user with uid defined in @guid variable
-  ### 
-  ##def test_user_get_delete
-  ##  delete "/user/#{$user_guid}"
-  ##  assert (last_response.status == 200), "Response is not 200"
-  ##end
 
   ## organization object tests -----------------------------------------------------
   def test_organization_features
@@ -105,7 +110,6 @@ class MyAppTest < MiniTest::Unit::TestCase
 
     # get organization by name
     get "/organization?Organization%20Name=#{$org_name}"
-    $org_guid = JSON::parse(last_response.body)[0]['act_key']
     assert (last_response.body.size > 50), "Get organization by name: response too small for valid data"
 
     # get organization with guid $org_guid
