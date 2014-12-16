@@ -1,20 +1,38 @@
 development:
+<<<<<<< HEAD
   server: iam0.dwpbank.net
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
   shellenv: . ~/.env/idm-deplenv.env
   properties: .wlst/imint.prop
+=======
+  server: iam2
+  user: iam
+  deploy_dir: /appl/iam/fmw/config/deploy/imint/new
+  shellenv: . ~/.env/idm-deplenv.sh
+  properties: .env/identity-imint.prop
+>>>>>>> bd7e49faf33864a97bd30d5c6d4429c89de283a1
 
 test:
   server: dwptoim1
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
+<<<<<<< HEAD
   shellenv: . ~/.env/idm-deplenv.env
   properties: .wlst/imint.prop
+=======
+  shellenv: . ~/.env/idm-deplenv.sh
+  properties: .env/identity-imint.prop
+>>>>>>> bd7e49faf33864a97bd30d5c6d4429c89de283a1
 
 production:
   server: iam0
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
+<<<<<<< HEAD
   shellenv: . ~/.env/idm-deplenv.env
   properties: .env/imint.prop
+=======
+  shellenv: . ~/.env/idm-deplenv.sh
+  properties: .env/identity-imint.prop
+>>>>>>> bd7e49faf33864a97bd30d5c6d4429c89de283a1
