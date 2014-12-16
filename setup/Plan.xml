@@ -25,5 +25,5 @@
       <uri>WEB-INF/lib/oimclient.jar!/META-INF/persistence.xml</uri>
     </module-descriptor>
   </module-override>
-  <config-root>/appl/iam/fmw/config/domains/IAMGovernanceDomain/./config/deployments/imint.war/plan</config-root>
+  <config-root>/opt/fmw/config/domains/identity_test/./config/deployments/imint.war/plan</config-root>
 </deployment-plan>

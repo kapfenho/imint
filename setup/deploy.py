@@ -35,10 +35,9 @@ def deployApp():
         print "*** Error: during deployment"
         print dumpStack()
 
-
 if __name__== "main":
     prep()
-    connect(userConfigFile=defUC,userKeyFile=defUK,url=defAdminURL)
+    connect(userConfigFile=domUC,userKeyFile=domUK,url=domUrl)
     undeployApp()
     deployApp()
     exit()
