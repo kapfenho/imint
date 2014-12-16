@@ -1,20 +1,20 @@
 development:
-  server: iam2
-  user: iam
-  deploy_dir: /appl/iam/fmw/config/deploy/imint/new
-  shellenv: . ~/.env/idm-deplenv.sh
+  server: iam0.dwpbank.net
+  user: fmwuser
+  deploy_dir: /opt/fmw/config/deploy/imint/new
+  shellenv: . ~/.env/idm-deplenv.env
   properties: .wlst/imint.prop
 
 test:
   server: dwptoim1
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
-  shellenv: . ~/.env/idm-deplenv.sh
+  shellenv: . ~/.env/idm-deplenv.env
   properties: .wlst/imint.prop
 
 production:
-  server: dwppoim1
+  server: iam0
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
-  shellenv: . ~/.env/idm-deplenv.sh
-  properties: .wlst/imint.prop
+  shellenv: . ~/.env/idm-deplenv.env
+  properties: .env/imint.prop
