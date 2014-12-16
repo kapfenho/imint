@@ -51,7 +51,6 @@ module Imint
     put '/user/:id/entitlement/:eid' do
       ent = OIM::do.prov.revoke_user_entitlement( { :eid => params[:eid], 
                                                     :id => params[:id] } )
-      puts ent.inspect
       halt 404 if ent.class == IOError
       halt 404 if ent == Java::OracleIamProvisioningException::AccountNotFoundException
       halt 404 if ent == Java::OracleIamProvisioningException::EntitlementNotProvisionedException
@@ -96,11 +95,28 @@ module Imint
     put '/user/:id/password' do
       data = JSON.parse(request.body.read)
       user = OIM::do.user.change_password(params[:id], data)
+      data[:is_usr_login => false]
       halt 404 if user.class == Java::OracleIamIdentityException::NoSuchUserException
       halt 401 if user.class == Java::OracleIamPlatformAuthzException::AccessDeniedException
       halt 400 if user.class == Java::OracleIamIdentityException::UserManagerException
     end
-  
+   
+    get '/:usr_login' do
+      users = OIM::do.user.search_for( params )
+      halt 404 if users.nil? or users.empty?
+      content_type :js
+      JSON::pretty_generate users
+    end
+
+    put '/:usr_login/password' do
+      data = JSON.parse(request.body.read)
+      data['is_usr_login'] = true 
+      user = OIM::do.user.change_password(params[:usr_login], data)
+      halt 404 if user.class == Java::OracleIamIdentityException::NoSuchUserException
+      halt 401 if user.class == Java::OracleIamPlatformAuthzException::AccessDeniedException
+      halt 400 if user.class == Java::OracleIamIdentityException::UserManagerException
+    end
+
     delete '/user/:id' do
       halt 500 unless OIM::do.user.delete params[:id]
       204

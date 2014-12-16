@@ -47,7 +47,10 @@ module Imint
      
     def change_password(id, data)
       begin
-        @svc.changePassword(id, data['password'].to_java.toCharArray, false, false)
+        @svc.changePassword(id, 
+                            data['password'].to_java.toCharArray, 
+                            data['is_usr_login'], 
+                            data['notify_racf'])
       rescue Exception => ex
         ex
       end
@@ -55,9 +58,13 @@ module Imint
 
     protected
     def search(crit)
-      @svc.search(crit, @atts, nil).map do |e|
-        a = e.get_attributes.to_hash
-        a.delete_if { |k,v| v.nil? }
+      begin
+        @svc.search(crit, @atts, nil).map do |e|
+          a = e.get_attributes.to_hash
+          a.delete_if { |k,v| v.nil? }
+        end
+      rescue Exception => ex
+        ex
       end
     end
   end
