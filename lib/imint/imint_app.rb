@@ -101,17 +101,17 @@ module Imint
       halt 400 if user.class == Java::OracleIamIdentityException::UserManagerException
     end
    
-    get '/:usr_login' do
+    get '/login/:usr_login' do
       users = OIM::do.user.search_for( params )
       halt 404 if users.nil? or users.empty?
       content_type :js
       JSON::pretty_generate users
     end
 
-    put '/:usr_login/password' do
+    put '/login/:usr_login/password' do
       data = JSON.parse(request.body.read)
-      data['is_usr_login'] = true 
-      user = OIM::do.user.change_password(params[:usr_login], data)
+      user = OIM::do.user.change_password(login: params[:usr_login],
+                                          data[:password])
       halt 404 if user.class == Java::OracleIamIdentityException::NoSuchUserException
       halt 401 if user.class == Java::OracleIamPlatformAuthzException::AccessDeniedException
       halt 400 if user.class == Java::OracleIamIdentityException::UserManagerException

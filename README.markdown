@@ -60,15 +60,17 @@ _Additional info: [REST API Tutorial](http://www.restapitutorial.com/lessons/htt
 | HTTP POST /user                           | Create/add user (plus body)                        |
 | HTTP PUT /user/<id>                       | Change/update user (plus body)                     |
 | HTTP DELETE /user/<id>                    | Delete/remove user (status change in OIM)          |
+| HTTP GET /user/<id>/entitlements          | Returns all user entitlements                      |
+| HTTP GET /user/<id>/entitlements/<eid>    | Returns entitlement <eid> of user <id>             |
+| HTTP PUT /user/<id>/entitlements/<eid>    | Revoke entitlement <eid> from user <id>            |
 
 ### User Password
 
 | Command                                   | Function                                           |
 | ----------------------------------------- | -------------------------------------------------- |
 | HTTP PUT /user/<id>/password              | Set new password for user <id>                     |
-| HTTP GET /userlogin/<login>               | Same function, access via login                    |
-| HTTP PUT /userlogin/<login>/password      | Set new password for user <login>                  |
-| HTTP GET /role/<id>/members               | Get all members of role with ID                    |
+| HTTP GET /login/<login>                   | Get user by login (case insensitive)               |
+| HTTP PUT /login/<login>/password          | Set new password for user with <login>             |
 
 ### Organization
 
@@ -86,13 +88,14 @@ _Additional info: [REST API Tutorial](http://www.restapitutorial.com/lessons/htt
 
 | Command                                   | Function                                           |
 | ----------------------------------------- | -------------------------------------------------- |
-| HTTP GET /user/attributes                 | Helper: get all available user attributes          |
-| HTTP GET /user/<id>                       | Get user by ID                                     |
-| HTTP GET /user                            | List all users                                     |
-| HTTP GET /user?First Name=Horst           | Search by attribute                                |
-| HTTP POST /user                           | Create/add user (plus body)                        |
-| HTTP PUT /user/<id>                       | Change/update user (plus body)                     |
-| HTTP DELETE /user/<id>                    | Delete/remove user (status change in OIM)          |
+| HTTP GET /role/attributes                 | Helper: get all available role attributes          |
+| HTTP GET /role/<id>                       | Get role by ID                                     |
+| HTTP GET /role                            | List all roles                                     |
+| HTTP GET /role?Role Name=Admin            | Search by attribute                                |
+| HTTP POST /role                           | Create/add role (plus body)                        |
+| HTTP PUT /role/<id>                       | Change/update role (plus body)                     |
+| HTTP DELETE /role/<id>                    | Delete/remove role (status change in OIM)          |
+| HTTP GET /role/<id>/members               | Get all members of role with ID                    |
 
 
 ### Sample Calls
