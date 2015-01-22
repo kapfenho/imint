@@ -1,6 +1,5 @@
 Warbler::Config.new do |config|
   config.manifest_file = "config/MANIFEST.MF"
-  config.jar_name = "imint" 
   config.excludes = FileList["config/*.erb"]
   config.excludes << "config/environment.*"
   config.excludes << "config/*.example"
