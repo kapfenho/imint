@@ -55,7 +55,7 @@ desc "Deploy app" # ------------------------------------------------------
 task :deploy, :env do |t,args|
   env = (YAML.load_file('config/environment.yml'))[args[:env]]
   sh "scp #{WARF} #{env['user']}@#{env['server']}:#{env['deploy_dir']}/"
-  sh "ssh #{env['user']}@#{env['server']} '#{env['shellenv']}; deploy imint'"
+  sh "ssh #{env['user']}@#{env['server']} -t '/bin/bash -l -c \"idm ; deploy imint\"'"
 end
 
 desc "Extract war" # -----------------------------------------------------

@@ -18,7 +18,6 @@ java::lang.System.setProperty('java.security.auth.login.config','config/authwl.c
 
 require 'lib/imint/imint_app'
 
-#set :environment, :production
-
 run Imint::ImintApp
+
 

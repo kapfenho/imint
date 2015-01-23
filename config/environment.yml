@@ -2,19 +2,13 @@ development:
   server: iam0.dwpbank.net
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
-  shellenv: . ~/.env/idm-deplenv.env
-  properties: .env/imint.prop
 
 test:
   server: dwptoim1.dwpbank.net
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
-  shellenv: . ~/.env/idm-deplenv.env
-  properties: ~/.env/imint.prop
 
 production:
   server: dwppoim1.dwpbank.net
   user: fmwuser
   deploy_dir: /opt/fmw/config/deploy/imint/new
-  shellenv: . ~/.env/idm-deplenv.env
-  properties: ~/.env/imint.prop

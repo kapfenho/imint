@@ -8,12 +8,9 @@ module Imint
   class ImintApp < Sinatra::Base
 
     class OIM
-      def self.connect()
-        conf = YAML.load_file('config/imint.yml')
-        env = ENV['RACK_ENV'] || 'development'
-        oim = conf[env]['oim']
+      def self.connect(user, password, url)
         @@con = OIMController.new
-        @@con.connect(oim['url'], oim['user'], oim['password'])
+        @@con.connect(url, user, password)
       end
   
       def self.do()
@@ -24,9 +21,12 @@ module Imint
     configure do
       enable :logging
       set :json_encoder, :to_json
-      env = ENV['RACK_ENV'] || 'development'
-      puts "Environment has been set to #{env} by evaluating RACK_ENV"
-      OIM::connect()
+
+      env = java::lang.System.getProperty('imint.env') || ENV['RACK_ENV'] || 'production'
+      cf  = java::lang.System.getProperty('imint.config') || 'config/imint.yml'
+      conf = YAML.load_file(cf)
+      oim = conf[env]['oim']
+      OIM::connect(oim['user'], oim['password'], oim['url'])
       puts "Successfully connected to OIM"
     end
 
