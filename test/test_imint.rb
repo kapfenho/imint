@@ -36,7 +36,7 @@ class MyAppTest < MiniTest::Unit::TestCase
 #   
 #    # NOTE: in order for this one to work, you have to have entitlements assigned for this user
 #    # get all user entitlements
-#    get '/user/21/entitlements'
+#    get '/user/21/entitlement'
 #    assert (last_response.status == 200), "Get specific user entitlement: response is not 200"
 # 
 #    # get specific user entitlement

@@ -10,9 +10,8 @@ module Imint
     class OIM
       def self.connect()
         conf = YAML.load_file('config/imint.yml')
-        # env = ENV['RACK_ENV'] || 'development'
-
-        oim = conf[ENV['RACK_ENV'] || 'development']['oim']
+        env = ENV['RACK_ENV'] || 'development'
+        oim = conf[env]['oim']
         @@con = OIMController.new
         @@con.connect(oim['url'], oim['user'], oim['password'])
       end
@@ -25,35 +24,10 @@ module Imint
     configure do
       enable :logging
       set :json_encoder, :to_json
+      env = ENV['RACK_ENV'] || 'development'
+      puts "Environment has been set to #{env} by evaluating RACK_ENV"
       OIM::connect()
-    end
- 
-    # provisioning
-    #
-    # get all user entitlements
-    get '/user/:id/entitlements' do
-      ent = OIM::do.prov.get_user_entitlements(params)
-      halt 404 if ent.empty? or ent.nil?
-      content_type :js
-      JSON::pretty_generate ent
-    end
-
-    # -> get user entitilement
-    get '/user/:id/entitlement/:eid' do
-      ent = OIM::do.prov.get_user_entitlements(params)
-      halt 404 if ent.nil? or ent.empty?
-      halt 404 if ent == Java::OracleIamProvisioningException::UserNotFoundException
-      content_type :js
-      JSON::pretty_generate OIM::do.prov.parse_entitlements(ent)
-    end
-    
-    # -> revoke user entitlement
-    put '/user/:id/entitlement/:eid' do
-      ent = OIM::do.prov.revoke_user_entitlement( { :eid => params[:eid], 
-                                                    :id => params[:id] } )
-      halt 404 if ent.class == IOError
-      halt 404 if ent == Java::OracleIamProvisioningException::AccountNotFoundException
-      halt 404 if ent == Java::OracleIamProvisioningException::EntitlementNotProvisionedException
+      puts "Successfully connected to OIM"
     end
 
     # user      ----------------------------------------
@@ -63,7 +37,7 @@ module Imint
       JSON::pretty_generate OIM::do.user.list_attributes.sort
     end
 
-    get '/user' do
+    get '/user/?' do
       if params.size > 0
         params['usr_key'] = params['usr_key'].to_i if params.key?('usr_key')
         users = OIM::do.user.search_for(params)
@@ -100,36 +74,66 @@ module Imint
       halt 401 if user.class == Java::OracleIamPlatformAuthzException::AccessDeniedException
       halt 400 if user.class == Java::OracleIamIdentityException::UserManagerException
     end
-   
-    get '/login/:usr_login' do
-      users = OIM::do.user.search_for( params )
-      halt 404 if users.nil? or users.empty?
-      content_type :js
-      JSON::pretty_generate users
-    end
-
-    put '/login/:usr_login/password' do
-      data = JSON.parse(request.body.read)
-      user = OIM::do.user.change_password(login: params[:usr_login],
-                                          data[:password])
-      halt 404 if user.class == Java::OracleIamIdentityException::NoSuchUserException
-      halt 401 if user.class == Java::OracleIamPlatformAuthzException::AccessDeniedException
-      halt 400 if user.class == Java::OracleIamIdentityException::UserManagerException
-    end
 
     delete '/user/:id' do
       halt 500 unless OIM::do.user.delete params[:id]
       204
     end
 
+    # provisioning ----------------------------------------------
+    #
+    # get all user entitlements
+    get '/user/:id/entitlement/?' do
+      ent = OIM::do.prov.get_user_entitlements(params)
+      halt 404 if ent.empty? or ent.nil?
+      content_type :js
+      JSON::pretty_generate ent
+    end
+
+    # -> get user entitilement
+    get '/user/:id/entitlement/:eid' do
+      ent = OIM::do.prov.get_user_entitlements(params)
+      halt 404 if ent.nil? or ent.empty?
+      halt 404 if ent == Java::OracleIamProvisioningException::UserNotFoundException
+      content_type :js
+      JSON::pretty_generate OIM::do.prov.parse_entitlements(ent)
+    end
+    
+    # -> revoke user entitlement
+    put '/user/:id/entitlement/:eid' do
+      ent = OIM::do.prov.revoke_user_entitlement( { :eid => params[:eid], 
+                                                    :id => params[:id] } )
+      halt 404 if ent.class == IOError
+      halt 404 if ent == Java::OracleIamProvisioningException::AccountNotFoundException
+      halt 404 if ent == Java::OracleIamProvisioningException::EntitlementNotProvisionedException
+    end
+
+    # login  -----------------------------------------------
+    #
+    get '/login/:login' do
+      users = OIM::do.user.search_for(params)
+      halt 404 if users.nil? or users.empty?
+      content_type :js
+      JSON::pretty_generate users
+    end
+
+    put '/login/:login/password/?' do
+      data = JSON.parse(request.body.read)
+      user = OIM::do.user.change_password( { login: params[:login],
+                                             password: data[:password] } )
+      halt 404 if user.class == Java::OracleIamIdentityException::NoSuchUserException
+      halt 401 if user.class == Java::OracleIamPlatformAuthzException::AccessDeniedException
+      halt 400 if user.class == Java::OracleIamIdentityException::UserManagerException
+    end
+
     # role              ------------------------------------
     #
-    get '/role/attributes' do
+    get '/role/attributes/?' do
       content_type :js
       JSON::pretty_generate OIM::do.role.list_attributes.sort
     end
 
-    get '/role' do
+    get '/role/?' do
       if params.size > 0
         params['Role Key'] = params['Role Key'].to_i if params.key?('Role Key')
         roles = OIM::do.role.search_for(params)
@@ -158,12 +162,12 @@ module Imint
 
     # organization      ------------------------------------
     #
-    get '/organization/attributes' do
+    get '/organization/attributes/?' do
       content_type :js
       JSON::pretty_generate OIM::do.org.list_attributes.sort
     end
   
-    get '/organization' do
+    get '/organization/?' do
       if params.size > 0
         params['act_key'] = params['act_key'].to_i if params.key?('act_key')
         orgs = OIM::do.org.search_for(params)
@@ -182,7 +186,7 @@ module Imint
       JSON::pretty_generate orgs
     end
   
-    post '/organization' do
+    post '/organization/?' do
       data = JSON.parse(request.body.read)
       org = OIM::do.org.create(data)
     end

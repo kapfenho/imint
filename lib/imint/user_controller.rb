@@ -45,13 +45,17 @@ module Imint
       @svc.modify(JUser::User.new(java.lang.String.new(uid), java.util.HashMap.new(para)))
     end
      
-    def change_password(userid: uid, userlogin: login, password: pwd)
+    # change password by uid or by login, like:
+    # { uid: '1234',   password: 'newpwd' }
+    # { login: '1234', password: 'newpwd' }
+    #
+    def change_password(data)
       begin
-        if uid 
-          @svc.changePassword(uid,   pwd.to_java.toCharArray, false,
+        if data[:uid]
+          @svc.changePassword(data[:uid], data[:password].to_java.toCharArray, false,
                               false)
         else
-          @svc.changePassword(login, pwd.to_java.toCharArray, true,
+          @svc.changePassword(data[:login], data[:password].to_java.toCharArray, true,
                               false)
         end
       rescue Exception => ex

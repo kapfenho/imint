@@ -3,6 +3,7 @@ Warbler::Config.new do |config|
   config.excludes = FileList["config/*.erb"]
   config.excludes << "config/environment.*"
   config.excludes << "config/*.example"
+  #config.excludes << "config/imint.yml"
   config.excludes << "*.sh"
 
   # shipped with jrf
